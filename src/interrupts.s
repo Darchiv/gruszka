@@ -1,5 +1,6 @@
 .import handle_reset
-.import acia6551_send_byte, acia6551_irq_handler
+.import acia6551_irq_handler
+.import _on_break_interrupt
 
 ; Assigning procedure addresses to interrupt vectors.
 .segment "VECTORS"
@@ -30,9 +31,8 @@ do_nothing:
         and #$10           ; Get B bit from P copy.
         beq irq
 
-break:  ; TODO: system calls
-        lda #$47
-        jsr acia6551_send_byte ; Just for laughs on BReaK.
+break:  ; TODO: system calls, passing parameters
+        jsr _on_break_interrupt
 
         sec
         bcs exit

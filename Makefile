@@ -17,12 +17,15 @@ OBJS += $(patsubst %.s,%.o,$(wildcard $(RUNTIME_DIR)/*.s))
 
 OBJS += $(patsubst %.s,%.o,$(wildcard $(DRIVERS_DIR)/*.s))
 
-CL_FLAGS += -t none --cpu 65c02 -Isrc/include
+HEADERS += $(wildcard $(SRC_DIR)/*.h)
+HEADERS += $(wildcard $(DRIVERS_DIR)/*.h)
+
+CL_FLAGS += -t none --cpu 65c02 -Isrc/include --asm-include-dir src/include
 
 rom.bin: $(OBJS) mem.cfg
 	cl65 $(CL_FLAGS) -C mem.cfg -m map.txt -o "$@" $(OBJS)
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c mem.cfg
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c mem.cfg $(HEADERS)
 	cl65 $(CL_FLAGS) -c -o "$@" "$<"
 
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.s mem.cfg
