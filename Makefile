@@ -20,7 +20,7 @@ OBJS += $(patsubst %.s,%.o,$(wildcard $(DRIVERS_DIR)/*.s))
 HEADERS += $(wildcard $(SRC_DIR)/*.h)
 HEADERS += $(wildcard $(DRIVERS_DIR)/*.h)
 
-CL_FLAGS += -t none --cpu 65c02 -Isrc/include --asm-include-dir src/include
+CL_FLAGS += -t none --cpu 65c02 -Isrc/include --asm-include-dir src/include --bin-include-dir process
 
 rom.bin: $(OBJS) mem.cfg
 	cl65 $(CL_FLAGS) -C mem.cfg -m map.txt -o "$@" $(OBJS)
