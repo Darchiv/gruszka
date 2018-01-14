@@ -358,6 +358,7 @@ _mod_load:
         jsr     ReadAndCheckError       ; Bails out in case of errors
 
 ; We read the o65 header successfully. Validate it.
+
         ldy     #ExpectedHdrSize-1
 ValidateHeader:
         lda     Header,y

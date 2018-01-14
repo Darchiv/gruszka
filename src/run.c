@@ -1,14 +1,13 @@
 #include <stdint.h>
-#include <string.h>
 #include <modload.h>
 #include <mocks.h>
+#include <utils.h>
+
 #include "drivers/6551.h"
 
-void put_string(char *str);
-void on_break_interrupt(void);
+void __fastcall__ on_break_interrupt(uint8_t signature);
 
 char *welcome_text = "GRUSZKA Operating System boots...\r\n";
-char *break_text = "Break has happened.\r\n";
 
 int16_t __fastcall__ mock_read(int16_t callerdata, void *buffer, uint16_t count);
 
@@ -23,8 +22,7 @@ void run (void) {
 
 	acia6551_init();
 
-
-	put_string(welcome_text);
+	kprint(welcome_text);
 
 	// Simple echo "terminal".
 	while (1) {
@@ -35,32 +33,27 @@ void run (void) {
 				__asm__("brk");
 				__asm__("nop");
 			} else if (b == 'M') {
+				uint16_t entry_addr;
+
 				t = mod_load(&mod);
 				mock_read_rewind();
-				put_string("Module loading: ");
-				acia6551_send_byte(0x30 + t);
+
+				entry_addr = (uint16_t) mod.module + (uint16_t) mod.entry;
+
+				kprint("Module loading: %d. Address: %p\r\n", t, entry_addr);
 
 				if (t == MLOAD_OK){
-					mock_give_control((uint16_t) mod.module + (uint16_t) mod.entry);
+					mock_give_control(entry_addr);
 				}
 			} else {
-				acia6551_send_byte(b);
+				kprint("%c", b);
 			}
 		}
 	}
 }
 
-void put_string(char *str) {
-	uint8_t r = 0;
-	uint8_t len = strlen(str);
-
-	while (r < len) {
-		r += acia6551_send_str(str + r);
-	}
-}
-
-void on_break_interrupt(void) {
-	put_string(break_text);
+void __fastcall__ on_break_interrupt(uint8_t signature) {
+	kprint("[SYSCALL] Number `%x`.\r\n", signature);
 }
 
 int16_t __fastcall__ mock_read(int16_t callerdata, void *buffer, uint16_t count) {
