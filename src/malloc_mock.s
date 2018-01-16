@@ -9,34 +9,46 @@ free_pointer:	.byte $00, $00
 .code
 
 .proc _malloc
-		sta ptr1                    ; Store size in ptr1
+        ; Store size in ptr1
+        sta ptr1                   
         stx ptr1+1
 
-		; Check for a size of zero, if so, return NULL
+        ; Check for a size of zero, if so, return NULL
         ora ptr1+1
         beq done
 
         ; if not initialised, then initialise it
-        lda	free_pointer
-        ora	free_pointer + 1
+        lda free_pointer
+        ora free_pointer + 1
         bne initialised
 
-		lda #<__RAM_LAST__
-		sta free_pointer
-		ldx #>__RAM_LAST__
-		stx free_pointer + 1
+	lda #<__RAM_LAST__
+	sta free_pointer
+	ldx #>__RAM_LAST__
+	stx free_pointer + 1
 
 initialised:
-		lda ptr1
-        ldx ptr1+1
+        ; Save current free pointer.
+        lda free_pointer
+        pha
+        lda free_pointer + 1
+        pha
 
+        ; Load the size argument
+        lda ptr1
+        ldx ptr1 + 1
+
+        ; Calculate next free address with the size argument.
         clc
         adc free_pointer
-        tay
+        sta ptr1
         txa
         adc free_pointer + 1
-        tax
-        tya
+        sta ptr1 + 1
+
+        ; Restore the free pointer.
+        plx
+        pla
 
 done:
 		rts
