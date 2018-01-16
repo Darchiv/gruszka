@@ -13,8 +13,9 @@ int16_t __fastcall__ mock_read(int16_t callerdata, void *buffer, uint16_t count)
 
 struct mod_ctrl mod = {mock_read, 0x0, 0};
 
-
 unsigned char __fastcall__ mod_load (struct mod_ctrl* ctrl);
+
+uint16_t entry_addr = 0;
 
 void run (void) {
 	uint8_t b, t;
@@ -33,18 +34,16 @@ void run (void) {
 				__asm__("brk");
 				__asm__("nop");
 			} else if (b == 'M') {
-				uint16_t entry_addr;
-
 				t = mod_load(&mod);
 				mock_read_rewind();
 
 				entry_addr = (uint16_t) mod.module + (uint16_t) mod.entry;
 
-				kprint("Module loading: %d. Address: %p\r\n", t, entry_addr);
+				kprint("Module loading: %d. Module: %x. Entry: %x. Size: %x, id: %x. Address: %x\r\n", t, (uint16_t) mod.module, (uint16_t) mod.entry, mod.module_size, mod.module_id, entry_addr);
+			} else if(b == 'R') {
+				uint8_t ret = mock_give_control(entry_addr);
 
-				if (t == MLOAD_OK){
-					mock_give_control(entry_addr);
-				}
+				kprint("Executed. Return: %d\r\n", ret);
 			} else {
 				kprint("%c", b);
 			}

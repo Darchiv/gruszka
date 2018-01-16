@@ -8,7 +8,7 @@ Position: .byte <test_file, >test_file
 
 .rodata
 test_file:
-.incbin "test.o65"
+.incbin "sh/sh.o65"
 
 .code
 

@@ -19,7 +19,7 @@ HEADERS += $(wildcard $(DRIVERS_DIR)/*.h)
 
 RUNTIME_LIB = libc/cruntime.lib
 
-CL_FLAGS += -t none --cpu 65c02 -Isrc/include --asm-include-dir src/include --bin-include-dir process
+CL_FLAGS += -t none --cpu 65c02 -Isrc/include --asm-include-dir src/include --bin-include-dir userland
 
 rom.bin: $(OBJS) mem.cfg
 	cl65 $(CL_FLAGS) -C mem.cfg -m map.txt -o "$@" $(OBJS) $(RUNTIME_LIB)
