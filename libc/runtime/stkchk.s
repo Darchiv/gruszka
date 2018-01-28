@@ -101,7 +101,7 @@ Fail:   lda     #4
 ; ----------------------------------------------------------------------------
 ; Data
 
-.segment        "INIT"
+.data
 
 ; Initial stack pointer value. Stack is reset to this in case of overflows to
 ; allow program exit processing.

@@ -2,7 +2,7 @@
 .import acia6551_irq_handler
 .import _on_break_interrupt
 
-.import decax1
+.import decax1, pusha0
 .importzp ptr1
 
 .bss
@@ -60,10 +60,23 @@ break:
         stx ptr1+1
         lda (ptr1)
 
-        jsr _on_break_interrupt
+        jsr pusha0
 
+        ply
+        ; Restore arguments address in ax.
+        plx
+        pla
+
+        cli
+
+        jsr _on_break_interrupt
+        ; Return code in AX.
+
+        sei
+
+        ; Brk's registers are to be changed to syscalls output.
         sec
-        bcs exit
+        bcs brkexit
 
 irq:    ; TODO: interrupt chain
         jsr acia6551_irq_handler
@@ -72,6 +85,6 @@ exit:   ; Restore registers from the stack.
         ply
         plx
         pla
-
+brkexit:
         rti
 .endproc

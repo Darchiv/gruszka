@@ -51,10 +51,6 @@ void run (void) {
 	}
 }
 
-void __fastcall__ on_break_interrupt(uint8_t signature) {
-	kprint("[SYSCALL] Number `%x`.\r\n", signature);
-}
-
 int16_t __fastcall__ mock_read(int16_t callerdata, void *buffer, uint16_t count) {
 	uint16_t i;
 

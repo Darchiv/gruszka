@@ -125,6 +125,8 @@ GetReloc:
         bcc     FormatError
         cmp     #O65_SEGID_ZP
         beq     @L1
+        cmp     #O65_SEGID_BSS
+        beq     @L2
         bcs     FormatError
 
 ; Text, data and bss segment
@@ -137,6 +139,27 @@ GetReloc:
 
 @L1:    lda     #<__ZP_START__
         ldx     #>__ZP_START__
+        rts
+
+
+; Bss relocation
+@L2:    lda     Module
+        add     Header + O65_HDR::TLEN
+        pha
+
+        lda     Module + 1
+        adc     Header + O65_HDR::TLEN + 1
+        tax
+
+        pla
+        add     Header + O65_HDR::DLEN
+        pha
+
+        txa
+        adc     Header + O65_HDR::DLEN + 1
+        tax
+
+        pla
         rts
 
 ;------------------------------------------------------------------------------
