@@ -1,6 +1,9 @@
 #include <stdint.h>
 #include <utils.h>
 #include <_syscall.h>
+#include <mocks.h>
+
+#include <modload.h>
 
 #include "../drivers/6551.h"
 
@@ -56,6 +59,21 @@ uint16_t __fastcall__ on_break_interrupt(uint8_t signature, uint8_t *argaddr) {
 			}
 
 			return count;
+		}
+		case SYS_EXEC:
+		{
+			uint16_t ret;
+			//uint16_t fd = *((int16_t *) argaddr);
+
+			#ifdef DEBUG
+			kprint("[SYSCALL] Performing execution. ArgAddr = %p\r\n", argaddr);
+			#endif
+
+			set_malloc_40();
+
+			ret = mock_execute(0x1);
+
+			return ret;
 		}
 		default:
 			kprint("[SYSCALL] Undefined syscall: %u.\r\n", signature);

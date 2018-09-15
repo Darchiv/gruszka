@@ -1,4 +1,4 @@
-.export _malloc, _free
+.export _malloc, _free, _set_malloc_40
 
 .import __RAM_LAST__
 .import pushax, tosaddax
@@ -56,4 +56,14 @@ done:
 
 .proc _free
 		rts
+.endproc
+
+.proc _set_malloc_40
+        lda #$00
+        ldx #$40
+
+        sta free_pointer
+        stx free_pointer + 1
+
+        rts
 .endproc

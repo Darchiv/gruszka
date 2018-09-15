@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <unistd.h>
+
 // Numbef of characters per line allowed plus null byte.
 #define INPUT_LENGTH (127 + 1)
 
@@ -28,7 +30,7 @@ int8_t main(int16_t argc, const char* argv[]) {
 		if (strcmp(program_name, "help") == 0) {
 			printf("Available commands: help, hello.\r\n");
 		} else if (strcmp(program_name, "hello") == 0) {
-			printf("Hello World!\r\n");
+			exec(program_name, "");
 		} else {
 			printf("[\x1b[41mERR\x1b[0m] No such command: %s\r\n", program_name);
 		}
